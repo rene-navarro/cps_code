@@ -1,0 +1,4 @@
+# Ignore dependency folders and log files
+*.log
+.DS_Store  # macOS system file
+Thumbs.db  # Windows system file
