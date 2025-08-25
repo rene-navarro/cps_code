@@ -5,6 +5,7 @@ import requests
 def fetch_url(url):
     print(f"Starting to fetch {url}")
     response = requests.get(url)
+   
     print(f"Finished fetching {url} with status code {response.status_code}")
 
 if __name__ == "__main__":

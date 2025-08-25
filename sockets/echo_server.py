@@ -25,7 +25,7 @@ def run_server():
         data = client_socket.recv(1024)
         response = data.decode("utf-8") # convert bytes to string
         
-        # if we receive "close" from the client, then we break
+        # if we receive "." from the client, then we break
         # out of the loop and close the conneciton
         if response.lower() == ".":
             # send response to the client which acknowledges that the
