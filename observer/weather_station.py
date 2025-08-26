@@ -3,6 +3,8 @@ import time
 import random
 from abc import ABC, abstractmethod
 from typing import List, Any
+import csv
+import os   
 
 class Observer(ABC):
     @abstractmethod
@@ -141,11 +143,35 @@ class ForecastDisplay(Observer):
             
             self._last_pressure = current_pressure
 
+class CurrentConditionsLogger(Observer):
+    """Observer that displays current weather conditions."""
+    
+    def __init__(self, name: str = "Current Conditions Logger"):
+        self.name = name
+    
+    def update(self, subject: Subject, data: Any = None) -> None:
+        """Update display with new weather data."""
+        if isinstance(subject, WeatherStation) and data:
+            asyncio.create_task(write_csv(subject.name, time.strftime("%Y-%m-%d %H:%M:%S"), 
+                                          data['temperature'], data['humidity'], data['pressure']))
+            
+            
+          
+
 def sensor_value(min_val: float = 20.0, max_val: float = 47.0) -> float:
     if min_val > max_val:
         raise ValueError(f"min_val ({min_val}) must be less than or equal to max_val ({max_val})")
     
     return random.uniform(min_val, max_val)
+
+async def write_csv(station: str, date_time:str, t:float, h:float, p:float):
+    """Asynchronously write data to a CSV file."""  
+    # Ensure the directory exists
+    filename = 'ws-data.csv'
+    # os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([station, date_time, t, h, p])
 
 async def weather_updater(station:WeatherStation, delay):
     while True:
@@ -166,10 +192,12 @@ async def main():
 
     # Create observers
     current_display = CurrentConditionsDisplay()
+    current_logger = CurrentConditionsLogger()
     statistics_display = StatisticsDisplay()
     forecast_display = ForecastDisplay()
 
     weather_station_1.attach(current_display)
+    weather_station_1.attach(current_logger)
     weather_station_2.attach(statistics_display)
     weather_station_3.attach(forecast_display)
 
