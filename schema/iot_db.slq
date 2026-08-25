@@ -1,0 +1,21 @@
+CREATE TABLE locations (
+    location_id INT PRIMARY KEY,
+    location_name VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE devices (
+    device_id VARCHAR(50) PRIMARY KEY,
+    device_type VARCHAR(50),
+    location_id INT,
+    installed_date DATE,
+    FOREIGN KEY (location_id) REFERENCES locations(location_id)
+);
+
+CREATE TABLE sensor_readings (
+    reading_id SERIAL PRIMARY KEY,
+    device_id VARCHAR(50),
+    recorded_at TIMESTAMP,
+    value FLOAT,
+    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+);
